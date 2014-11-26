@@ -1,0 +1,74 @@
+﻿{% extends "base.html" %}
+
+{% block body_class %}profiles_form{% endblock %}
+
+
+{% block title %}Profile form{% endblock %}
+
+
+{% block content_title %}
+  <h2>Update profile form</h2>
+{% endblock %}
+
+
+
+{% block content %}
+  {% load thumbnail %}
+  <form action="{% url membership_profile_edit object.user.username %}" method="post" enctype="multipart/form-data" class="profile_form">{% csrf_token %}
+    {% if object.mugshot %}<div class="member_photo right_rail"><img src="{{ MEDIA_URL }}{{ object.mugshot.url|thumbnail:"200" }}" alt="profile photo" width="200px" /></div>{% endif %}
+    <table>
+      {{ user_form.as_table }}
+      {{ profile_form.as_table }}
+    </table>
+
+    <div>
+      <h4>Membership Information</h4>
+      {% if object.member.photo %}<div class="member_photo right_rail"><img src="{{ MEDIA_URL }}{{ object.member.photo.url|thumbnail:"200" }}" alt="member photo" width="200px" /></div>{% endif %} 
+      {# member_formset.management_form #}
+
+      <table class="service">
+        {% for field in member_form %}
+          {% if not field.is_hidden %}
+          {% if field.errors %}<tr><td columnwidth=2>{{ field.errors }}</td></tr>{% endif %}
+          <tr>
+           {% ifequal field.name "family" %}<th>{{ field.label_tag }}</th><td>{{ field }}{% if not object.member.family %} <span><a href="{% url family_form %}">Create a new family</a>, if not listed</span>{% endif %}</td>
+           {% else %}
+            <th>{{ field.label_tag }}</th> <td>{{ field }}</td>
+           {% endifequal %}
+          </tr>
+          {% else %}
+            {{ field }}
+          {% endif %}
+        {% endfor %}
+      </table>
+    </div>
+
+    
+    <div>
+      <h4>Other profiles <small>(e.g. Flickr, Twitter, etc.)</small></h4>
+      {{ service_formset.management_form }}
+      
+      {% for form in service_formset.forms %}
+      <table class="service">
+        {{ form }}
+      </table>
+      {% endfor %}
+      
+      <p class="quiet">To add more services than displayed save and continue editing.</p>
+    </div>
+    <div>
+      <h4>Personal links <small>(Example: Your blog, you personal site, etc.)</small></h4>
+      {{ link_formset.management_form }}
+      
+      {% for form in link_formset.forms %}
+      <table class="link">
+        {{ form }}
+      </table>
+      {% endfor %}
+      
+      <p class="quiet">To add more links than displayed save and continue editing.</p>
+    </div>
+    
+    <p><input class="button" type="submit" value="Save"></p>
+  </form>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "churchmembers/base_members.html" %}
+
+{% block title %}Church Family: {{ object.name }}{% endblock %}
+{% block body_id %}family_detail_page{% endblock %}
+
+{% load i18n %}
+
+{% block headline %}
+  <h2>Edit family information</h2>
+{% endblock %}
+
+
+{% block content %}
+  {% load blog markup comments inlines %}
+  <form action="." method="post">{% csrf_token %}
+    <div>
+      <table>
+      {{ family_form.as_table }}
+      </table>
+        <h4>Add family members</h4>
+        <p>Your current family members are:
+           {% for member in family.member_set.all %}
+           {{ member.profile.user.get_full_name }}{% if not forloop.last %}, {% endif %}
+           {% endfor %}
+        </p>
+        {{ user_formset.management_form }}
+        {% for user_form in user_formset.forms %}
+        <table class="users_form">
+          {{ user_form }}
+        </table>
+        {% endfor %}
+        
+        <p class="quiet">To add more family members save and continue editing.</p>
+      <input type="submit" name="submit" value="submit" />
+    </div>
+  </form>
+{% endblock %}
+
+{% block rightrailcontent %}{% load tagging_tags %}{{ block.super }}
+  {% tags_for_object family as tag_list %}
+  {% if tag_list %}
+  <h2>Related tags:</h2>
+  <p class="inline_tag_list">
+  {% for tag in tag_list %}
+  <a href="{{ tag|slugify }}/">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+  {% endfor %}
+  </p>
+  {% endif %}
+{% endblock %}

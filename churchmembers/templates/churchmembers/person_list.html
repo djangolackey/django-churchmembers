@@ -1,0 +1,39 @@
+{% extends "churchmembers/base_members.html" %}
+
+{% block title %}Church {{ Type }}{% endblock %}
+{% block body_id %}person_list_page{% endblock %}
+
+{% load i18n %}
+
+{% block headline %}
+  <h2 class="content_headline">{{ site.name }} {{ type|title }}</h2>
+{% endblock %}
+
+
+{% block content %}
+  {% load blog markup comments inlines thumbnail %}
+  {% for person in person_list %}
+      <div class="item{% if forloop.counter0|divisibleby:"2" %} clr{% endif %}" id="user-{{ user.id }}">
+        <h3><a href="{{ person.get_absolute_url }}">{{ person.user.get_full_name }}</a></h3>
+        {% if person.photo %}<img src="{{ MEDIA_URL }}{{ person.photo.url|thumbnail:"200" }}" alt="{{ person.user.get_full_name }}" width="200px" />{% endif %}
+        {% with person.get_primary_contact as contact %}
+        {% if contact.address or contact.city %}
+        <h4>Address:</h4>
+        <ul>
+        {% if contact.address %}<li>{{ contact.address }}</li>{% endif %}
+        {% if contact.city %}<li>{{ contact.city }}, {{ contact.state }}  {{ contact.zip }}</li>{% endif %}
+        </ul>
+        {% endif %}
+        {% if contact.mobile or contact.home_phone or contact.email or contact.website %}
+        <h4>Numbers:</h4>
+        <ul>
+        {% if contact.home_phone %}<li>{{ contact.home_phone }}</li>{% endif %}
+        {% if contact.mobile %}<li>{{ contact.mobile }}</li>{% endif %}
+        {% if contact.email %}<li>{{ contact.email }}</li>{% endif %}
+        {% if contact.website %}<li>{{ contact.website }}</li>{% endif %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+      </div>
+  {% endfor %}
+{% endblock %}

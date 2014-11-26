@@ -1,0 +1,38 @@
+{% extends "churchmembers/base_members.html" %}
+
+{% block title %}{{ person.user.get_full_name }}{% endblock %}
+{% block body_id %}person_detail_page{% endblock %}
+
+{% load i18n %}
+
+{% block headline %}
+  <h2>{{ person.user.get_full_name }}</h2>
+{% endblock %}
+
+
+{% block content %}
+  {% load blog markup comments inlines %}
+  <div class="main_content">
+    {% if person.address or person.city or person.state or person.zip %}
+    <h3>Address:</h3>
+    <p>
+    {% if person.address %}{{ person.address }}{% endif %}
+    {% if person.city %}<br />{{ person.city }}, {% endif %}
+    {% if person.state %}{{ person.state }}{% endif %}
+    {% if person.zip %}  {{ person.zip }}{% endif %}
+    </p>
+    {% endif %}
+    {% with person.get_primary_contact as contact %}
+    {% if contact.home_phone or contact.mobile or contact.email or contact.website %}
+    <h3>Phone and Internet:</h3>
+    <ul>
+    {% if contact.home_phone %}<li>{{ contact.home_phone }}</li>{% endif %}
+    {% if contact.mobile %}<li>{{ contact.mobile }}</li>{% endif %}
+    {% if contact.email %}<li>{{ contact.email }}</li>{% endif %}
+    {% if contact.website %}<li>{{ contact.website }}</li>{% endif %}
+    </ul>
+    {% endif %}
+    {% ifequal user.person person %}<p><a href="{% url person_edit %}">Edit your contact information</a></p>{% endifequal %} 
+    {% endwith %}
+  </div>
+{% endblock %}
